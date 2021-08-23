@@ -9,4 +9,13 @@ use Illuminate\Notifications\Notifiable;
 class Category extends Model
 {
     use HasFactory, HasFactory, Notifiable;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'name',
+    ];
 }
