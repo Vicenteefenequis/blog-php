@@ -1,0 +1,50 @@
+version: "3"
+services:
+  blog_api:
+    container_name: blog_api
+    build:
+      dockerfile: .docker/app/Dockerfile
+      context: .
+    entrypoint: dockerize -wait tcp://blog_mysql:3306 -timeout 40s /entrypoint.sh
+    volumes:
+      - ./www:/var/www
+    ports:
+      - "9000:9000"
+    depends_on:
+      - blog_mysql
+    networks:
+      - blog-app-net
+
+  blog_nginx:
+    container_name: blog_nginx
+    build: ./.docker/nginx
+    restart: always
+    tty: true
+    ports:
+      - "8000:80"
+    volumes:
+      - ./www:/var/www
+    networks:
+      - blog-app-net
+    depends_on:
+      - blog_api
+
+  blog_mysql:
+    container_name: blog_mysql
+    build: .docker/mysql
+    command: --innodb-use-native-aio=0
+    restart: always
+    tty: true
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./.docker/db_data:/var/lib/mysql
+      - ./.docker/mysql:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    networks:
+      - blog-app-net
+
+networks:
+  blog-app-net:
+    driver: bridge
