@@ -7,8 +7,10 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller {
+    private $paginationSize = 15;
+
     public function index() {
-        return Category::all();
+        return Category::paginate($this->paginationSize);
     }
 
     public function store(Request $request) {

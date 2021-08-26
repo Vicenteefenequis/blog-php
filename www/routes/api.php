@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
@@ -17,10 +18,23 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+$exceptRoutes = ['except' => ['edit', 'create']];
+$exceptRoutesAuth = ['except' => ['show', 'index','edit','create']];
+
+Route::resource("users", UserController::class, $exceptRoutes);
+Route::resource("categories", CategoryController::class, $exceptRoutes);
+Route::resource("posts", PostController::class, $exceptRoutes);
+
+Route::middleware('auth:sanctum')->group(function () use ($exceptRoutesAuth) {
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+
+    Route::resource('categories', CategoryController::class, $exceptRoutesAuth);
+
+    Route::resource('posts', PostController::class, $exceptRoutesAuth);
+
 });
 
-Route::resource("users", UserController::class);
-Route::resource("categories", CategoryController::class);
-Route::resource("posts", PostController::class);
+
+Route::post("login", array(AuthController::class, "authenticate"));
