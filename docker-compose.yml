@@ -14,6 +14,8 @@ services:
       - blog_mysql
     networks:
       - blog-app-net
+    extra_hosts:
+      - gateway.docker.internal:172.17.0.1
 
   blog_nginx:
     container_name: blog_nginx
