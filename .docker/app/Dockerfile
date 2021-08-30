@@ -1,11 +1,13 @@
+FROM node:14.17-alpine AS buildnode
+USER root
+USER www-data
+
 FROM php:7.3.6-fpm-alpine3.9 AS base
 
 RUN apk add --no-cache shadow \
     openssl \
     bash \
     mysql-client \
-    nodejs \
-    npm \
     git \
     freetype-dev \
     libjpeg-turbo-dev \
@@ -18,6 +20,13 @@ RUN docker-php-ext-install -j$(nproc) gd
 RUN touch /home/www-data/.bashrc | echo "PS1='\w\$ '" >>  /home/www-data/.bashrc
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+COPY --from=buildnode /usr/local/bin/node /usr/local/bin/node
+COPY --from=buildnode /usr/local/lib/node_modules  /usr/local/lib/node_modules
+
+RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm
+RUN ln -s /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx
+
 
 RUN usermod -u 1000 www-data
 WORKDIR /var/www
@@ -35,5 +44,7 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
     && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
 ADD .docker/app/entrypoint.sh /entrypoint.sh
-
 USER www-data
+
+
+
