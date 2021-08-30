@@ -1,4 +1,5 @@
 const defaultTheme = require('tailwindcss/defaultTheme');
+const colors = require('tailwindcss/colors')
 
 module.exports = {
     purge: [
@@ -8,11 +9,25 @@ module.exports = {
     ],
 
     theme: {
+        borderColor: theme => ({
+            ...theme('colors'),
+            DEFAULT: theme('colors.gray.300','currentColor'),
+            'primary': '#F8EAEA'
+        }),
         extend: {
             fontFamily: {
                 sans: ['Nunito', ...defaultTheme.fontFamily.sans],
             },
         },
+        colors: {
+            ...colors,
+            black: {
+                ...colors.black,
+                DEFAULT: "#1C232D",
+            },
+
+        },
+
     },
 
     variants: {
