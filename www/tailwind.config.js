@@ -11,12 +11,14 @@ module.exports = {
     theme: {
         borderColor: theme => ({
             ...theme('colors'),
-            DEFAULT: theme('colors.gray.300','currentColor'),
-            'primary': '#F8EAEA'
+            DEFAULT: theme('colors.black', 'currentColor'),
+            'primary': '#f8eaea',
+            'secondary': '#ffed4a',
+            'danger': '#e3342f',
         }),
         extend: {
             fontFamily: {
-                sans: ['Nunito', ...defaultTheme.fontFamily.sans],
+                sans: ['Roboto', ...defaultTheme.fontFamily.sans],
             },
         },
         colors: {
@@ -25,7 +27,9 @@ module.exports = {
                 ...colors.black,
                 DEFAULT: "#1C232D",
             },
-
+            brown: {
+                DEFAULT: "#897A7A"
+            }
         },
 
     },
