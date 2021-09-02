@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Resources\PostResource;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,24 +16,40 @@ use Illuminate\Support\Facades\Route;
 
 $baseUrl = 'gateway.docker.internal:8000/api';
 
+
 Route::get('/', function () {
     return view('layouts/app');
 });
 
 
-Route::get('/posts', function () use ($baseUrl) {
+Route::get('/blog', function () use ($baseUrl) {
     $response = \Illuminate\Support\Facades\Http::acceptJson()->get($baseUrl . '/posts')->json();
-    list('data' => $posts,'links' => $links, 'meta' => $meta) = $response;
 
-    return view('posts', [
-        'posts' => $posts,
-        'links' => $links,
-        'meta' => $meta
+    list('data' => $posts, 'links' => $links, 'meta' => $meta) = $response;
+
+    return view('blog', [
+        'posts' => toObject($posts),
+        'links' => toObject($links),
+        'meta' => toObject($meta)
     ]);
 
 });
+
+Route::get('/posts/{id}', function ($id) use ($baseUrl) {
+    $response = \Illuminate\Support\Facades\Http::acceptJson()->get($baseUrl . '/posts/' . $id)->json();
+    list('data' => $post) = $response;
+    return view('post', [
+        'post' => toObject($post)
+    ]);
+
+})->name('post');
+
 
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
 
+
+function toObject($data) {
+    return json_decode(json_encode($data, JSON_FORCE_OBJECT));
+}
