@@ -6,6 +6,7 @@ use App\Http\Resources\PostResource;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller {
     private $paginationSize = 15;
@@ -15,19 +16,25 @@ class PostController extends Controller {
     }
 
     public function store(Request $request) {
-
         $validatedData = $this->validate($request, [
             "title" => "required|max:255",
             "description" => "string",
             "category_id" => "required|exists:categories,id",
+            "user_id" => "exists:users,id",
         ]);
 
-        $user = ["user_id" => Auth::user()->id];
+
+        $path = $request->file('image')->store('images', 's3');
+        Storage::disk('s3')->setVisibility($path, 'public');
+
+        $validatedData['user_id'] = Auth::user()->id;
+        $validatedData['photo_url'] = Storage::disk('s3')->url($path);
 
 
-        $post = Post::create($validatedData + $user);
+        $post = Post::create($validatedData);
         $post->refresh();
-        return $post;
+        return new PostResource($post);
+
     }
 
     public function show($id) {
