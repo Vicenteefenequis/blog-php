@@ -14,6 +14,7 @@
         @yield('navbar',View::make('components.blog-navbar'))
         <div class="flex justify-center items-center ">
             <div class="container col-span-3  mx-auto border border-primary p-5">
+                <img class="w-full h-96 object-cover" src="{{$post->photo_url}}"  alt="{{$post->title}}"/>
                 <h1 class="font-black text-2xl"> {{ $post->title }}</h1>
                 <p class="font-normal mt-4 text-brown"> {{$post->description}}</p>
             </div>
